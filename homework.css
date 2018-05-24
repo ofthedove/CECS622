@@ -1,0 +1,35 @@
+.pageContent {
+    justify-self: center;
+    max-width: 700px;
+    font-size: 1.2em;
+}
+
+.pageContent h2 {
+    font-size: 1.3em;
+}
+
+section.assignment table {
+    border-collapse: collapse;
+    margin: 20px auto;
+    font-size: .9em;
+    text-align: center;
+}
+
+section.assignment table, section.assignment th, section.assignment td {
+    border: 1px solid black;
+    padding: 3px 10px;
+}
+
+.implementation a {
+    font-size: .9em;
+    cursor: pointer;
+}
+
+code.hidden {
+    display: none;
+}
+
+section.discussion img {
+    width: 80%;
+    margin: 0 10%;
+}

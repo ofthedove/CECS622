@@ -37,7 +37,7 @@ body{
     grid-row: header-top / header-bottom;
 }
 
-.pageHeader h1,h2,h3 {
+.pageHeader h1, .pageHeader h2, .pageHeader h3 {
     text-align: center;
 }
 

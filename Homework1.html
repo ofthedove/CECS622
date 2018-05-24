@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CECS 622 Homework 1</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="homework.css">
+</head>
+<body>
+<div class="page">
+    <div class="homeButton">
+        <a class="homeLink" href="index.html">&lt; Course</a>
+    </div>
+    <div class="pageHeader">
+        <h2>CECS 622 Simulation of Discrete Systems</h2>
+        <h1>Homework 1</h1>
+        <h2>Andrew Combs</h2>
+        <h3>2018-05-23</h3>
+    </div>
+    <div class="pageContent">
+        <article class="homework">
+            <section class="assignment">
+                <h2>Assignment: A Single Dice Game</h2>
+                <p>The purpose of this project is to develop a Monte-Carlo game to simulate rolling a standard 6-face die and to evaluate the performance of two winning rules. </p>
+                <ol>
+                    <li>Roll a fair die</li>
+                    <li>Players A and B will collect money according the following rules:</li>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Outcome</th>
+                                <th>Player A</th>
+                                <th>Player B</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>$1</td>
+                                <td>$0</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>$2</td>
+                                <td>$0</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>$3</td>
+                                <td>$0</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>$8</td>
+                                <td>$0</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>$16</td>
+                                <td>$0</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>$0</td>
+                                <td>$32</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <li>Repeat steps (1) and (2) for N times; N= 10, 20, 30,  .., 200.</li>
+                    <li>Compute the average winning per time for each N.</li>
+                    <li>Plot Average winning vs. N for the two winning rulers “Player A and Player B”.</li>
+                    <li>Discuss the values of the two averages for very large N</li>
+                    <li>Submit a report that summarizes your results.</li>
+                </ol>
+                <p>You may use Excel or any programming language that you like.</p>
+            </section>
+            <section class="implementation">
+                <h2>Implementation</h2>
+                <p>The program is implemented using the following Javascript:</p>
+                <a onclick="toggleSelectCode()">(Show/Hide Code)</a><br><br>
+                <code class="prettyprint lang-js" data-code-select>
+                    function roll(numDie, numSides) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;var result = 0;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;for (; numDie > 0; numDie--) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result += Math.floor( (Math.random() * numSides) + 1 );<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return result;<br>
+                    }<br>
+                    <br>
+                    async function monteCarloGame(N, interval) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;initializeDataTable();<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;var PlayerATotal = 0;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;var PlayerBTotal = 0;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;var winTableA = [1, 2, 4, 8, 16, 0];<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;var winTableB = [0, 0, 0, 0, 0, 32];<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;var i;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;for (i = 0; i &lt; N; i++) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var rollResult = roll(1, 6);<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PlayerATotal += winTableA[rollResult - 1];<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PlayerBTotal += winTableB[rollResult - 1];<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data.addRow([i, PlayerATotal, PlayerBTotal]);<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (i % interval == 0) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;updateChart();<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;await sleep(50);<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    }<br>
+                </code>
+                <p>Additional initialization and helper functions are also used. The full code is:</p>
+                <a onclick="toggleFullCode()">(Show/Hide Code)</a><br><br>
+                <code class="prettyprint lang-js hidden" data-code-full>
+                    function sleep(ms) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return new Promise(resolve => setTimeout(resolve, ms));<br>
+                    }<br>
+                    <br>
+                    var data;<br>
+                    var options;<br>
+                    var chart;<br>
+                    <br>
+                    google.charts.load('current', {'packages':['corechart']});<br>
+                    google.charts.setOnLoadCallback(initializeChart);<br>
+                    <br>
+                    function initializeDataTable() {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;data = new google.visualization.DataTable();<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;data.addColumn('number', 'N');<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;data.addColumn('number', 'Player A');<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;data.addColumn('number', 'Player B');<br>
+                    }<br>
+                    <br>
+                    function initializeChart() {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;initializeDataTable();<br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;options = {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'title':'Average Winnings After N Games',<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;legend: { position: 'bottom' }<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;};<br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;chart = new google.visualization.LineChart(document.querySelector('[data-js-result-graph]'));<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;chart.draw(data, options);<br>
+                    }<br>
+                    <br>
+                    function updateChart() {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;chart.draw(data, options);<br>
+                    }<br>
+                    <br>
+                    function roll(numDie, numSides) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;var result = 0;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;for (; numDie > 0; numDie--) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result += Math.floor( (Math.random() * numSides) + 1 );<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return result;<br>
+                    }<br>
+                    <br>
+                    async function monteCarloGame(N, interval) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;initializeDataTable();<br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;var PlayerATotal = 0;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;var PlayerBTotal = 0;<br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;var winTableA = [1, 2, 4, 8, 16, 0];<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;var winTableB = [0, 0, 0, 0, 0, 32];<br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;var i;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;for (i = 0; i &lt; N; i++) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var rollResult = roll(1, 6);<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PlayerATotal += winTableA[rollResult - 1];<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PlayerBTotal += winTableB[rollResult - 1];<br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data.addRow([i, PlayerATotal, PlayerBTotal]);<br>
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (i % interval == 0) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;updateChart();<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;await sleep(50);<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    }<br>
+                </code>
+            </section>
+            <section class="Results">
+                <h2>Results</h2>
+                <p>Run the code to generate results:</p>
+                <label for="N">N</label>
+                <input id="N" tyle="number" value="100">
+                <input type="button" onclick="monteCarloGame(document.getElementById('N').value, 5)" value="Run Code">
+                <!--<p>The output in table form:</p>
+                <div data-js-result-table></div>-->
+                <p>The output as a line graph:</p>
+                <div data-js-result-graph></div>
+            </section>
+            <section class="discussion">
+                <h2>Discussion</h2>
+                <p>First, I ran the code several times with N = 100. I got wide-ranging results. Here are some examples:</p>
+                <img src="images/Homework1_N100BlueHigh.png">
+                <img src="images/Homework1_N100RedHigh.png">
+                <img src="images/Homework1_N100Equal.png">
+                <p>Claerly, N = 100 is insufficient for consistant results. I ran the code again at N = 1000 and got these results:</p>
+                <img src="images/Homework1_N1000_1.png">
+                <img src="images/Homework1_N1000_2.png">
+                <img src="images/Homework1_N1000_3.png">
+                <p>It is decided that N = 1000 is sufficient, as these tests show consistant results.</p>
+                <p>From experiment, then, it seems that Player B will always come out ahead in the long run.</p>
+                <p>If we examine the game, we can see why this makes sense from a statistical perspective. Each time the game is played, there are 6 posible outcomes. Each outcome is equally likely, which means as N approaces infinity each outcome will have occured the same number of times.</p>
+                <p>If each outcome occurs 1 * M times, where M is N / 6 for an arbitrarily large N, Player A will recieve M * $1 + M * $2 + M * $4 + M * $8 + M * $16, which is M * $31 by the distributive property. Player B will recieve M * $32. If we compare Player A's winnings with Player B's winnings, we see that we can use the subtraction property of equalities to eliminate M. This leaves us with:</p>
+                <p>Player A's winnings = $31 &lt; $32 = Player B's winnings</p>
+                <p>We may conclude that as N approaces infinity, Player B's winnings will exceed those of Player A. Therefore, if given the opportunity to play this game, one should always choose Player B's position.</p>
+            </section>
+        </article>
+    </div>
+</div>
+
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript" src="homework1.js"></script>
+<script type="text/javascript" src="homework.js"></script>
+
+</body>
+</html>
